@@ -1,9 +1,15 @@
 ﻿using FluentValidation;
 using LocalFriendzApi.Application.IServices;
 using LocalFriendzApi.Commom.Api;
+using LocalFriendzApi.Core.Configuration;
 using LocalFriendzApi.Core.Requests.Contact;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMQ.Client;
 using System.Net;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
 
 namespace LocalFriendzApi.Endpoints
 {
@@ -89,7 +95,40 @@ namespace LocalFriendzApi.Endpoints
         /// <returns></returns>
         static async Task<IResult> CreateRandomContacts([FromServices] IContactServices contactServices)
         {
+            var json = await File.ReadAllTextAsync("config.json", cancellationToken: new CancellationToken());
+
+            // Carregar as configurações do arquivo JSON
+            var config = JsonSerializer.Deserialize<RabbitMQConfig>(json);
+
+            // Configurar o ConnectionFactory
+            var factory = new ConnectionFactory()
+            {
+                HostName = config.HostName,
+                UserName = config.UserName,
+                Password = config.Password,
+            };
+
+            // Criar conexão assíncrona
+            await using var connection = await factory.CreateConnectionAsync(cancellationToken: new CancellationToken());
+            await using var channel = await connection.CreateChannelAsync();
+
+            // Declarar a fila (caso ela não exista)
+            await channel.QueueDeclareAsync(
+                queue: config.QueueName,
+                durable: config.Durable,
+                exclusive: config.Exclusive,
+                autoDelete: config.AutoDelete,
+            arguments: null,
+                cancellationToken: new CancellationToken()
+            );
+
             var randomContacts = contactServices.ContactGenerator(100);
+            
+            var message = JsonSerializer.Serialize(randomContacts);
+
+            var body = Encoding.UTF8.GetBytes(message);
+
+            await channel.BasicPublishAsync(exchange: "", routingKey: config.QueueName, basicProperties: null, body: body, cancellationToken: new CancellationToken());
 
             foreach (var contact in randomContacts)
             {
@@ -97,6 +136,7 @@ namespace LocalFriendzApi.Endpoints
                 {
                     Name = contact.Name,
                     Phone = contact.Phone,
+
                     DDD = contact.DDD,
                     Email = contact.Email,
                 });

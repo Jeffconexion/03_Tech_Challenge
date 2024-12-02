@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalFriendzApi.Infrastruct
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalFriendzApi.IntegrationTests", "src\LocalFriendzApi.Test\LocalFriendzApi.IntegrationTests.csproj", "{72AEB406-CFDB-4718-A6CD-F605119EF340}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalFriendzApi.ProcessamentoLote.Consumer", "src\LocalFriendzApi.ProcessamentoLote.Consumer\LocalFriendzApi.ProcessamentoLote.Consumer.csproj", "{D04B1A36-21CC-4B2C-B7C1-6B22CE5D3F91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{72AEB406-CFDB-4718-A6CD-F605119EF340}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72AEB406-CFDB-4718-A6CD-F605119EF340}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72AEB406-CFDB-4718-A6CD-F605119EF340}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D04B1A36-21CC-4B2C-B7C1-6B22CE5D3F91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D04B1A36-21CC-4B2C-B7C1-6B22CE5D3F91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D04B1A36-21CC-4B2C-B7C1-6B22CE5D3F91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D04B1A36-21CC-4B2C-B7C1-6B22CE5D3F91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
