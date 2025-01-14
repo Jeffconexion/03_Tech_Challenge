@@ -5,11 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: dotnet_app
     ports:
-      - "5005:5005"
       - "5006:5006"
     environment:
-      # se precisar rodar local substitua 'Host=db' por 'Host=localhost'
       - ConnectionStrings__PostgreSqlConnection=Host=db;Database=DB_FIAP_ARQUITETO;Username=postgres;Password=Teste@123
       - ASPNETCORE_URLS=http://+:5006
       - ASPNETCORE_ENVIRONMENT=Development
@@ -31,6 +30,37 @@ services:
       - ./scripts/FiapDB.sql:/docker-entrypoint-initdb.d/FiapDB.sql
     networks:
       - db-network
+
+  prometheus:
+    image: prom/prometheus:v2.49.1
+    ports:
+      - "9090:9090"
+    networks:
+      - db-network
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml  
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'  
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - db-network
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin  
+    depends_on:
+      - prometheus
+
 networks:
   db-network:
     driver: bridge
+
+volumes:
+  grafana-storage:
